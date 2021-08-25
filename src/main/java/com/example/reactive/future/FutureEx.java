@@ -1,6 +1,7 @@
 package com.example.reactive.future;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.LocalTime;
 import java.util.concurrent.ExecutionException;
@@ -24,5 +25,6 @@ public class FutureEx {
         log.debug("Exit ");
         Integer result = future.get(); // Future 의 결과가 전달될 때 까지 Blocking.
         log.debug("Result : [{}]", result);
+
     }
 }
