@@ -1,7 +1,6 @@
 package com.example.reactive.future;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.LocalTime;
 import java.util.concurrent.ExecutionException;
@@ -16,7 +15,7 @@ public class FutureEx {
         ExecutorService excutor = Executors.newSingleThreadExecutor();
 
         Future<Integer> future = excutor.submit(() -> {
-            log.debug("Start -> {}", LocalTime.now() );
+            log.debug("Start -> {}", LocalTime.now());
             int sum = 1 + 1;
             Thread.sleep(3000);
             return sum;
