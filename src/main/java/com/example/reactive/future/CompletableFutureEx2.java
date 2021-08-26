@@ -15,11 +15,11 @@ public class CompletableFutureEx2 {
             log.info("future-1");
             return 1;
         })
-        .thenApplyAsync(v -> {
+        .thenApply(v -> {
             log.info("future-1 thenApply [{}]", v);
             return v + 1;
         })
-        .thenComposeAsync(v -> {
+        .thenCompose(v -> {
             log.info("future-1 thenCompose [{}]", v);
             return CompletableFuture.supplyAsync(() -> v + 1);
         })

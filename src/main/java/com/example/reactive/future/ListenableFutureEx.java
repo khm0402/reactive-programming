@@ -13,16 +13,16 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 public class ListenableFutureEx {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         final ListenableFuture<String> listenableFuture1 = getDataListenableFuture("test1");
         listenableFuture1.addCallback(v1 -> {
             log.info("listenableFuture1 addCallback -> [{}]", v1);
 
-            final ListenableFuture<String> listenableFuture2 = getDataListenableFuture("test2");
+            final ListenableFuture<String> listenableFuture2 = getDataListenableFuture(v1 + "2");
             listenableFuture2.addCallback(v2 -> {
                 log.info("listenableFuture2 addCallback -> [{}]", v2);
 
-                final ListenableFuture<String> listenableFuture3 = getDataListenableFuture("test3");
+                final ListenableFuture<String> listenableFuture3 = getDataListenableFuture(v2 + "3");
                 listenableFuture3.addCallback(v3 -> {
                     log.info("listenableFuture3 addCallback -> [{}]", v3);
                 }, e -> {
