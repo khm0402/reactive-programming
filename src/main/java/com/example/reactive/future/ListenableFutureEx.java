@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import java.util.concurrent.CompletableFuture;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -14,26 +16,38 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class ListenableFutureEx {
 
     public static void main(String[] args) throws InterruptedException {
-        final ListenableFuture<String> listenableFuture1 = getDataListenableFuture("test1");
-        listenableFuture1.addCallback(v1 -> {
-            log.info("listenableFuture1 addCallback -> [{}]", v1);
 
-            final ListenableFuture<String> listenableFuture2 = getDataListenableFuture(v1 + "2");
-            listenableFuture2.addCallback(v2 -> {
-                log.info("listenableFuture2 addCallback -> [{}]", v2);
+        toCompletableFuture(getDataListenableFuture("test1"))
+                .thenCompose(v1 -> {
+                    log.info("thenCompose1 -> [{}]", v1);
+                    return toCompletableFuture(getDataListenableFuture(v1 + "2"));
+                })
+                .thenCompose(v2 -> {
+                    log.info("thenCompose -> [{}]", v2);
+                    return toCompletableFuture(getDataListenableFuture(v2 + "3"));
+                })
+                .thenAcceptAsync(v3 -> log.info("thenAccept -> [{}]", v3), new SimpleAsyncTaskExecutor("myThread-"));
 
-                final ListenableFuture<String> listenableFuture3 = getDataListenableFuture(v2 + "3");
-                listenableFuture3.addCallback(v3 -> {
-                    log.info("listenableFuture3 addCallback -> [{}]", v3);
-                }, e -> {
-                    log.error("listenableFuture3 error", e);
-                });
-            }, e -> {
-                log.error("listenableFuture2 error", e);
-            });
-        }, e -> {
-            log.error("listenableFuture1 error", e);
-        });
+//        final ListenableFuture<String> listenableFuture1 = getDataListenableFuture("test1");
+//        listenableFuture1.addCallback(v1 -> {
+//            log.info("listenableFuture1 addCallback -> [{}]", v1);
+//
+//            final ListenableFuture<String> listenableFuture2 = getDataListenableFuture(v1 + "2");
+//            listenableFuture2.addCallback(v2 -> {
+//                log.info("listenableFuture2 addCallback -> [{}]", v2);
+//
+//                final ListenableFuture<String> listenableFuture3 = getDataListenableFuture(v2 + "3");
+//                listenableFuture3.addCallback(v3 -> {
+//                    log.info("listenableFuture3 addCallback -> [{}]", v3);
+//                }, e -> {
+//                    log.error("listenableFuture3 error", e);
+//                });
+//            }, e -> {
+//                log.error("listenableFuture2 error", e);
+//            });
+//        }, e -> {
+//            log.error("listenableFuture1 error", e);
+//        });
 
         log.info("Exit");
     }
@@ -44,6 +58,12 @@ public class ListenableFutureEx {
             SECONDS.sleep(3);
             return data;
         });
+    }
+
+    public static CompletableFuture<String> toCompletableFuture(ListenableFuture<String> listenableFuture) {
+        CompletableFuture<String> completableFuture = new CompletableFuture<>();
+        listenableFuture.addCallback(completableFuture::complete, completableFuture::completeExceptionally);
+        return completableFuture;
     }
 
 }

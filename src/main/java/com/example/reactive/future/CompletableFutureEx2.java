@@ -3,13 +3,14 @@ package com.example.reactive.future;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class CompletableFutureEx2 {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
 
         CompletableFuture<Integer> future1 = CompletableFuture.supplyAsync(() -> {
             log.info("future-1");
@@ -25,7 +26,6 @@ public class CompletableFutureEx2 {
         })
         .exceptionally(e -> -10);
 
-
         CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
             log.info("future-2");
             return 100;
@@ -33,8 +33,6 @@ public class CompletableFutureEx2 {
 
         future2.thenCombine(future1, Integer::sum)
                 .thenAccept(v -> log.info("thenCombine [{}]", v));
-
-        log.info("Exit");
 
         ForkJoinPool.commonPool().shutdown();
         ForkJoinPool.commonPool().awaitTermination(10, TimeUnit.SECONDS);
